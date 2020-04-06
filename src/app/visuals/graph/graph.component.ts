@@ -19,7 +19,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
   @Input('nodes') nodes;
   @Input('links') links;
   graph: ForceDirectedGraph;
+  initLevelIndex : integer = 0; // Organization 
   private _options: { width, height } = { width: 800, height: 600 };
+ 
+ 
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -41,6 +44,8 @@ export class GraphComponent implements OnInit, AfterViewInit {
     this.graph.ticker.subscribe((d) => {
       this.ref.markForCheck();
     });
+
+    this.initLevelIndex = 0;
   }
 
   ngAfterViewInit() {

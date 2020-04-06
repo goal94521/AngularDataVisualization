@@ -15,13 +15,29 @@ export class BasicChartComponent implements OnInit {
 
   nodes: Node[] = [];
   links: Link[] = [];
+  level: integer;
 
   constructor() {
 
+    this.level = "Organization";
+    let i = 0;
+    
+    const nodeData = jsonData[this.level],
+        getIndex = number => number - 1
 
-console.log(jsonData)
+    nodeData.forEach( d => {
+      if(d.id === undefined) d.id == i++;
+      this.nodes.push(new Node(d.id,d));
+    });
+
+    console.log(this.nodes);
+
+    return;
+
+
+    console.log(jsonData)
     const N = APP_CONFIG.N,
-      getIndex = number => number - 1;
+      ;
 
     /** constructing the nodes array */
     for (let i = 1; i <= N; i++) {
