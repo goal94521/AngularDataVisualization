@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 const FORCES = {
   LINKS: 1 / 50,
   COLLISION: 1,
-  CHARGE: -1
+  CHARGE: -0.1
 }
 
 export class ForceDirectedGraph {
@@ -70,12 +70,12 @@ export class ForceDirectedGraph {
       this.simulation = d3.forceSimulation()
         .force('charge',
           d3.forceManyBody()
-            .strength(d => FORCES.CHARGE * d['r'])
+            .strength(d => FORCES.CHARGE * (d['r']))
         )
         .force('collide',
           d3.forceCollide()
             .strength(FORCES.COLLISION)
-            .radius(d => d['r'] + 5).iterations(2)
+            .radius(d => d['r'] + 30).iterations(2)
         );
 
       // Connecting the d3 ticker to an angular event emitter
@@ -88,7 +88,10 @@ export class ForceDirectedGraph {
     }
 
     /** Updating the central force of the simulation */
-    this.simulation.force('centers', d3.forceCenter(options.width / 2, options.height / 2));
+    this.simulation.force('centerX', d3.forceX(options.width / 2));
+    this.simulation.force('centerY', d3.forceY(options.height / 2));
+    //this.simulation.force('centers', d3.forceCenter(options.width / 2, options.height / 2));
+
 
     /** Restarting the simulation internal timer */
     this.simulation.restart();

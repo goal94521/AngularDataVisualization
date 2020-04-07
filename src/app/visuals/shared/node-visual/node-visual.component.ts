@@ -10,6 +10,7 @@ import { Node } from '../../../d3';
           [attr.fill]="node.color"
           cx="0"
           cy="0"
+          [attr.id]="node.id"          
           [attr.r]="node.r">
       </svg:circle>
       <svg:text

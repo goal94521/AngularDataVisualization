@@ -4,6 +4,9 @@ import * as d3 from 'd3';
 
 @Injectable()
 export class D3Service {
+
+  
+
   /** This service will provide methods to enable user interaction with elements
     * while maintaining the d3 simulations physics
     */
@@ -28,6 +31,21 @@ export class D3Service {
   /** A method to bind a draggable behaviour to an svg element */
   applyDraggableBehaviour(element, node: Node, graph: ForceDirectedGraph) {
     const d3element = d3.select(element);
+
+    d3element
+      .on('mouseover', d => {
+        const el = d3.select(d3.event.currentTarget).select('circle');
+        el.attr('r', 80);
+      })
+      .on('mouseout', d => {
+        const el = d3.select(d3.event.currentTarget).select('circle');
+        el.transition().duration(200).attr('r', 50);
+      }).on('click', (d,i) => {
+        const el = d3.select(d3.event.currentTarget);
+        console.log(d3element.attr('id'),el.attr('id'));
+      });
+
+    
 
     function started() {
       /** Preventing propagation of dragstart to parent elements */
