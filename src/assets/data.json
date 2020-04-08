@@ -1,0 +1,243 @@
+
+ {
+
+
+    "options" : {
+
+        "defaultClr" : "#0055FF",
+        "maxSize" : 40,
+        "initLevel" : 0
+
+    },
+
+    "Organization" :[
+
+        {
+
+            "Name": "Organization 1",
+            "Manager" : 1, 
+            "Team" : 1,
+            "color": "red",
+            "_tooltipFields" : ["Name","Manager"]
+                
+        },
+
+        {
+
+            "Name": "Organization 2",
+            "Manager" : 2, 
+            "Team" : 3,
+            "color" : "brown"
+                
+        },
+        {
+
+            "Name": "Organization 3",
+            "Manager" : 3, 
+            "Team" : 2
+                
+        },
+        {
+
+            "Name": "Organization 4",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Organization 5",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Organization 6",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Org 7",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Org 8",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Org 9",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Org 10",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Org 11",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Organization 12",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Organization 13",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Organization 14",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        },
+        {
+
+            "Name": "Organization 15",
+            "Manager" : 2, 
+            "Team" : 3
+                
+        }
+
+    ],
+
+    "Team" : [
+
+        {        
+            "id" : 1,     
+            "Name" : "Support",
+            "Manager" : 4            
+        },
+
+        {            
+            "id" : 2,
+            "Name" : "Marketing",
+            "Manager" : 5            
+        },
+
+        {           
+            "id" : 3, 
+            "Name" : "Services",
+            "Manager" : 6            
+        },
+
+
+        {           
+            "id" : 4, 
+            "Name" : "Operations",
+            "Manager" : 6            
+        },
+
+        {           
+            "id" : 5, 
+            "Name" : "Sales",
+            "Manager" : 6            
+        },
+
+        {           
+            "id" : 6, 
+            "Name" : "Call Center",
+            "Manager" : 6            
+        },
+
+        {           
+            "id" : 7, 
+            "Name" : "IT",
+            "Manager" : 6            
+        },
+
+        {           
+            "id" : 8, 
+            "Name" : "Engineering",
+            "Manager" : 6            
+        },
+        {           
+            "id" : 9, 
+            "Name" : "Human Resources",
+            "Manager" : 6            
+        }
+    ],
+
+    "Employee" : [
+
+
+        {
+            "id" : 1,            
+            "Firstname" : "Firstname 1",
+            "Lastname" : "Lastname1",
+            "Title" :  "Title1",
+            "Team": "TEAM 1"            
+        },
+
+        {            
+            "id" : 2,
+            "Firstname" : "Firstname 2",
+            "Lastname" : "Lastname2",
+            "Title" :  "Title2",
+            "Team": "TEAM 3"            
+
+        },
+
+        {            
+            "id" : 3,
+            "Firstname" : "Firstname 3",
+            "Lastname" : "Lastname3",
+            "Title" :  "Title3",
+            "Team": "TEAM 2"            
+
+        },
+
+        {            
+            "id" : 4,
+            "Firstname" : "Firstname 4",
+            "Lastname" : "Lastname4",
+            "Title" :  "Title4",
+            "Team": "TEAM xxx"            
+
+        },
+        {            
+            "id" : 5,
+            "Firstname" : "Firstname 3",
+            "Lastname" : "Lastname3",
+            "Title" :  "Title5",
+            "Team": "TEAM"            
+
+        },
+        {            
+            "id" : 6,
+            "Firstname" : "Firstname 6",
+            "Lastname" : "Lastname6",
+            "Title" :  "Title6",
+            "Team": "TEAM"            
+
+        }
+
+
+    ]
+
+}    
+
+
