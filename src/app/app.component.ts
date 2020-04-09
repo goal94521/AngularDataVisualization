@@ -4,7 +4,15 @@ import * as d3 from 'd3';
 
 interface Node {
   id: string;
-  group: number;
+  did: string;
+  data: any;
+  index?: number;
+  x?: number;
+  y?: number;
+  vx?: number;
+  vy?: number;
+  fx?: number | null;
+  fy?: number | null;
 }
 
 interface Link {
@@ -31,6 +39,8 @@ export class AppComponent implements OnInit {
   levels: string[] = [ "Organization", "Team", "Employee" ];
   currentLevelIndex: number = 0;
   svg: any;
+  nodeBase: any;
+  linkBase: any;
   width: number;
   height: number;
   currentLevel: string;
@@ -40,6 +50,11 @@ export class AppComponent implements OnInit {
   graph: any;
   simulation: any;
 
+
+   nodes: Node[] = [];
+   links: Link[] = [];
+
+
   constructor() {
 
     this.currentLevel = this.levels[this.currentLevelIndex];
@@ -47,83 +62,166 @@ export class AppComponent implements OnInit {
   }  
 
 
-  render( nodes, links) {
+  render( ) {
 
     const simulation = this.simulation;
-
-    function dragstarted(d) {
-      if (!d3.event.active) { simulation.alphaTarget(0.3).restart(); }
-      d.fx = d.x;
-      d.fy = d.y;
-    }
-
-    function dragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-      if (!d3.event.active) { simulation.alphaTarget(0); }
-      d.fx = null;
-      d.fy = null;
-    }
-
-        
+    const nodes = this.nodes;
+    const links = this.links;
+       
     const graph:Graph = <Graph>{ nodes, links };
+    const that = this;
 
-    this.link = this.svg.append('g')
-      .attr('class', 'links')
-      .selectAll('line')
-        .data(graph.links)
+    const link = this.linkBase
+      .selectAll('.links')
+        .data(graph.links);
+
+    const linkEnter = link   
         .enter()
         .append('line')
-     // .attr('stroke-width', (d: any) => Math.sqrt(d.value));
+        .classed('links', true)
 
-    this.node = this.svg.append('g')
-      .attr('class', 'nodes')
-      .selectAll(".node").data(graph.nodes);
+    const node = this.nodeBase
+      .selectAll(".nodes").data(graph.nodes, d => d.id);
 
+    node.exit().remove();
 
-    const nodeEnter = this.node.enter()  
+    const nodeEnter = node.enter()  
       .append("g")
-      .attr("class", "node")
-      .attr("id", d => "node-" + d.id )
+      .attr("class", "nodes")
+      .attr("id", (d: any) => {console.log(d); return "node-" + d.id } )
+      .call(
+        d3.drag()
+            .on("start", (d: any) => {
+                if (!d3.event.active)
+                    that.simulation.alphaTarget(0.01).restart()
+                d.fx = d.x
+                d.fy = d.y
+                d.movable = true
+            })
+            .on("drag",(d: any) => {
+                d.fx = d3.event.x
+                d.fy = d3.event.y
+            })
+            .on("end", (d: any) => {
+                if (!d3.event.active) that.simulation.alphaTarget(0)
+                d.fx = d.x // null
+                d.fy = d.y // null
+            })
+    )
+
 
     nodeEnter
       .append('circle')
-        .attr('r', this.radius)
-        .attr('fill', (d: any) => d.color || '#55F')
-        .call(d3.drag()
-          .on('start', dragstarted)
-          .on('drag', dragged)
-          .on('end', dragended)
-    );
+        .attr('r', d => this.radius - d.level *5)
+        .attr('fill', (d: any) => d3.hsl(d.color || '#55F').darker(this.currentLevelIndex))
+        .on('mouseover', (d: any) => {
+          const el = d3.select(d3.event.currentTarget);
+          el.attr('r', this.radius+10 - d.level *5);
+        })
+        .on('mouseout', (d: any) => {
+          const el = d3.select(d3.event.currentTarget);
+          el.transition().duration(300).attr('r', this.radius - d.level *5);
+        }).on('click', (d: any ,i) => {
+          const el = d3.select(d3.event.currentTarget);
+          this.currentLevelIndex++;
+          this.nodes = [d];
+          this.loadData('assets/data.json');
+          
+        });
+
 
     nodeEnter  
-      .append('text')
+      .append('text')        
         .text(d => d.Name)
         .attr('dy',5)
 
+    nodeEnter.merge(node)
 
-    simulation.nodes(graph.nodes);
-   
+    simulation.nodes(graph.nodes)
+      .on('tick', ticked);
+
+    const forceLink = d3.forceLink().links(graph.links).strength(0.01)
+
+    simulation.force("link",forceLink);
+
+
+    function ticked() {
+  
+
+      linkEnter  
+        .attr('x1', function(d: any) { return d.source.x; })
+        .attr('y1', function(d: any) { return d.source.y; })
+        .attr('x2', function(d: any) { return d.target.x; })
+        .attr('y2', function(d: any) { return d.target.y; });
+  
+      nodeEnter
+        .attr(
+          "transform",
+            d => "translate(" +  ( 
+              [
+                d.x = Math.max(d.size, Math.min(that.width - d.size, d.x)),
+                d.y = Math.max(d.size, Math.min(that.height - d.size, d.y))
+            ] ) +
+
+         ")"
+    )
 
   }
+   
+   // simulation.force<d3.ForceLink<any, any>>('link')
+   // .links(graph.links);
+
+  }
+
+  processData(error: any, alldata: any) {
+
+
+    console.log(alldata);
+
+    const currentLevel = this.levels[this.currentLevelIndex];
+    const data = alldata[currentLevel];
+    let index = 1;
+
+    data.forEach((d) => {
+      d.size = 40;
+      d.x = this.width/2;
+      d.y = this.height/2;
+      d.id = currentLevel + '_' + index++;
+      d.level = this.currentLevelIndex;
+      d.Name = d.Name || d.Firstname;
+      d.data = d;
+      this.nodes.push(<Node>d);
+    });
+
+
+    data.links && data.links.forEach((d) => {
+      this.links.push(<Link>d);
+    });
+
+    this.render();
+
+
+  }
+
+  loadData(url: string) {
+
+    d3.queue()
+    .defer(d3.json, url)      
+      .await(this.processData.bind(this));
+}
 
   ngOnInit() {
 
     console.log('D3.js version:', d3['version']);
 
     this.svg = d3.select('svg');    
+    this.nodeBase = d3.select('#nodeBase');
+    this.linkBase = d3.select('#linkBase');
+
     const sizes = this.svg.node().getBoundingClientRect();
 
     this.width = sizes.width;
     this.height = sizes.height;
-
-    
-    let currentLevelIndex = 0;
-
-   
 
     this.simulation = d3.forceSimulation()
       .force('link', d3.forceLink().id((d: any) => d.id))
@@ -135,64 +233,7 @@ export class AppComponent implements OnInit {
       .force('centerX', d3.forceX(this.width / 2))
       .force('centerY', d3.forceY(this.height / 2));
 
-
-    d3.json('assets/data.json', (err, alldata: any) => {
-      if (err) { throw new Error('Bad data file!'); }
-
-      const nodes: Node[] = [];
-      const links: Link[] = [];
-
-      const that = this;
-
-      const link = this.link;
-      const node = this.node;
-      
-      const data = alldata[this.currentLevel];
-
-      data.forEach((d) => {
-        d.size = 40;
-        nodes.push(<Node>d);
-      });
-/*
-      data.links.forEach((d) => {
-        links.push(<Link>d);
-      });
-  */
-
-      this.render(nodes,links);
-
-     
-      this.simulation
-        
-        .on('tick', ticked);
-
-      //this.simulation.force<d3.ForceLink<any, any>>('link')
-       // .links(graph.links);
-
-        this.simulation.force('link')
-          .links(this.graph.links);
-
-      function ticked() {
-      /*  link
-          .attr('x1', function(d: any) { return d.source.x; })
-          .attr('y1', function(d: any) { return d.source.y; })
-          .attr('x2', function(d: any) { return d.target.x; })
-          .attr('y2', function(d: any) { return d.target.y; });
-      */
-        node && node
-        .attr(
-          "transform",
-          d => "translate(" +  ( 
-          [
-             d.x = Math.max(d.size, Math.min(that.width - d.size, d.x)),
-             d.y = Math.max(d.size, Math.min(that.height - d.size, d.y))
-          ] ) +
-
-             ")"
-      )
-
-      }
-    });
-
+      this.loadData('assets/data.json');
+   
   }
 }
